@@ -1,8 +1,5 @@
 const defaultStyles = {
   playButton: {
-  /*  minHeight: '15vh',
-    maxWidth: '15vh',
-    */
     backgroundColor: '#F39C12',
     borderRadius: '100%',
     height: '72px',

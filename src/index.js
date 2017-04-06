@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import defaultStyles from './defaultStyles';
 import YoutubePlayer from 'react-youtube';
 import RangeSlider from './Slider';
-import VideoOverlay, { ButtonOverlay } from './VideoOverlays';
+import VideoOverlay, { ButtonOverlay, mergeObjects } from './VideoOverlays';
 
 class YouTubeCustomPlayer extends Component {
   constructor(props) {
@@ -25,6 +25,9 @@ class YouTubeCustomPlayer extends Component {
   }
   onReadyPlayer(event) {
     this.setState({ player: event.target });
+    if (this.props.onReady) {
+      this.props.onReady(event);
+    }
   }
   getFormatedMinutes(time = 0) {
     const strPadLeft = (string) => (new Array(3).join(0) + string).slice(-2);
@@ -58,6 +61,9 @@ class YouTubeCustomPlayer extends Component {
     } else {
       this.setState({ state: event.data });
     }
+    if (this.props.onStateChange) {
+      this.props.onStateChange(event);
+    }
   }
   handleClick(value = true) {
     this.setState({ click: value });
@@ -65,29 +71,41 @@ class YouTubeCustomPlayer extends Component {
   handleSeek(value) {
     this.state.player.seekTo(value);
   }
-  mergeStyles(defaultStyle, newStyle) {
-    return Object.assign({}, defaultStyle, newStyle);
-  }
   render() {
-    const { videoId, replayButton } = this.props;
+    const { videoId, replayButton, youtubeOpts, overlayStyle,
+    buttonWrapperStyle, controlsBarStyle, sliderBarStyle,
+    sliderBarFillStyle, sliderBarHandlerStyle } = this.props;
     const { click, player, state, currentTime, paused, time } = this.state;
-    const playButton = (<ButtonOverlay>
-      <div style={defaultStyles.playButtonAfter} />
+    const playButton = (<ButtonOverlay style={buttonWrapperStyle}>
+      {this.props.playButton || <div style={defaultStyles.playButtonAfter} />}
     </ButtonOverlay>);
-    const pauseButton = (<ButtonOverlay>
-      <div style={defaultStyles.pauseButton} />
+    const pauseButton = (<ButtonOverlay style={buttonWrapperStyle}>
+        {this.props.pauseButton || <div style={defaultStyles.pauseButton} />}
     </ButtonOverlay>);
     const thumbnail = (<img
       style={defaultStyles.img}
       src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`}
       role="presentation"
     />);
+    const youtubePlayerOpts = mergeObjects({
+      playerVars: {
+        controls: 0,
+        enablejsapi: 1,
+        showinfo: 0,
+        rel: 0,
+        modestbranding: 1,
+        autoplay: 1,
+        iv_load_policy: 3,
+      },
+      width: '100%',
+      height: '100%',
+    }, youtubeOpts);
     return (
       <div style={defaultStyles.wrapper}>
         {!click ?
           <div onClick={this.handleClick}>
             {thumbnail}
-            <VideoOverlay>
+            <VideoOverlay style={overlayStyle}>
               {playButton}
             </VideoOverlay>
           </div> :
@@ -98,52 +116,48 @@ class YouTubeCustomPlayer extends Component {
               onClick={() => this.handleSeek(0)}
             >
               {thumbnail}
-              <VideoOverlay>
-                <ButtonOverlay>
+              <VideoOverlay style={overlayStyle}>
+                <ButtonOverlay style={buttonWrapperStyle}>
                     {replayButton || 'Replay'}
                 </ButtonOverlay>
               </VideoOverlay>
             </div>
             <div
-              style={Object.assign({}, defaultStyles.iframe,
+              style={mergeObjects(defaultStyles.iframe,
                 state === YoutubePlayer.PlayerState.ENDED ?
                 defaultStyles.hiddenObject : null)}
             >
               <YoutubePlayer
                 videoId={videoId}
                 id={'player'}
-                opts={{
-                  playerVars: {
-                    controls: 0,
-                    enablejsapi: 1,
-                    showinfo: 0,
-                    rel: 0,
-                    modestbranding: 1,
-                    autoplay: 1,
-                    iv_load_policy: 3,
-                  },
-                  width: '100%',
-                  height: '100%',
-                }}
+                opts={youtubePlayerOpts}
                 onReady={this.onReadyPlayer}
                 onStateChange={this.handlePlayerState}
+                onPlay={this.props.onPlay}
+                onPause={this.props.onPause}
+                onEnd={this.props.onEnd}
+                onError={this.props.onError}
+                onPlaybackRateChange={this.props.onPlaybackRateChange}
+                onPlaybackQualityChange={this.props.onPlaybackQualityChange}
               />
-              <VideoOverlay>
+            <VideoOverlay style={overlayStyle}>
                 {!paused && time ? playButton : null}
                 {paused && time ? pauseButton : null}
               </VideoOverlay>
               {player ?
-                <div style={defaultStyles.controlsBar}>
+                <div style={mergeObjects(defaultStyles.controlsBar, controlsBarStyle)}>
                   <div>
                     <RangeSlider
-                      min={0}
                       max={player.getDuration()}
                       value={currentTime}
                       onChange={this.handleSeek}
+                      barStyle={sliderBarStyle}
+                      barFillStyle={sliderBarFillStyle}
+                      barHandlerStyle={sliderBarHandlerStyle}
                     />
                   </div>
                   <div style={defaultStyles.controlsBarButtons}>
-                    {state === 1 ?
+                    {state === YoutubePlayer.PlayerState.PLAYING ?
                       <span style={{ fontSize: '11px' }} onClick={() => player.pauseVideo()}>
                         ▍▍
                       </span> :
@@ -165,6 +179,19 @@ class YouTubeCustomPlayer extends Component {
 YouTubeCustomPlayer.propTypes = {
   videoId: React.PropTypes.string.isRequired,
   replayButton: React.PropTypes.object,
+  playButton: React.PropTypes.object,
+  pauseButton: React.PropTypes.object,
+  youtubeOpts: React.PropTypes.object,
+  overlayStyle: React.PropTypes.object,
+  onPlay: React.PropTypes.func,
+  onPause: React.PropTypes.func,
+  onEnd: React.PropTypes.func,
+  onError: React.PropTypes.func,
+  onStateChange: React.PropTypes.func,
+  onPlaybackRateChange: React.PropTypes.func,
+  onPlaybackQualityChange: React.PropTypes.func,
+  onReady: React.PropTypes.func,
+  onStateChange: React.PropTypes.func,
 };
 
 export default YouTubeCustomPlayer;

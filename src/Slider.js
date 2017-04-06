@@ -64,7 +64,6 @@ class RangeSlider extends Component {
 
   handleMouseUp() {
     this.setState({ mouseDown: false });
-    console.log("up")
     if (this.props.onChange) {
       this.props.onChange(this.state.value);
     }
@@ -88,6 +87,7 @@ class RangeSlider extends Component {
   }
 
   render() {
+    const { barStyle, barFillStyle, barHandlerStyle } = this.props;
     return (
       <div>
         <div
@@ -101,20 +101,18 @@ class RangeSlider extends Component {
           onMouseEnter={this.handleMouseEnter}
         >
           <div
-            style={Object.assign({},
-              styles.slideBar,
+            style={Object.assign({}, styles.slideBar, barStyle,
               this.state.mouseEnter ? styles.slideBarMouseEnter : {})}
           />
           <div
-            style={Object.assign({},
-              styles.slideBar,
+            style={Object.assign({}, styles.slideBar,
               styles.slideBarFill,
+              barFillStyle,
               this.state.mouseEnter ? styles.slideBarMouseEnter : {},
               { width: `${this.state.fillWidth}%` })}
           />
           <div
-            style={Object.assign({},
-              styles.handleButton,
+            style={Object.assign({}, styles.handleButton, barHandlerStyle,
               { left: `${this.state.fillWidth}%` })}
           />
         </div>
@@ -123,13 +121,17 @@ class RangeSlider extends Component {
   }
 }
 RangeSlider.propTypes = {
-  min: React.PropTypes.number.isRequired,
+  min: React.PropTypes.number,
   max: React.PropTypes.number.isRequired,
   value: React.PropTypes.number.isRequired,
   onChange: React.PropTypes.func,
   type: React.PropTypes.string,
+  barStyle: React.PropTypes.object,
+  barFillStyle: React.PropTypes.object,
+  barHandlerStyle: React.PropTypes.object,
 };
 RangeSlider.defaultProps = {
+  min: 0,
   type: 'float',
 };
 export default RangeSlider;
