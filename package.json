@@ -1,6 +1,6 @@
 {
   "name": "react-custom-youtube-player",
-  "version": "1.0.0",
+  "version": "0.0.1-alpha.1",
   "description": "Simple custom youtube player",
   "main": "./lib/",
   "scripts": {
@@ -19,7 +19,7 @@
     "custom"
   ],
   "author": "Zipdev",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {},
   "devDependencies": {
     "babel-cli": "6.24.0",
