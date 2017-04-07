@@ -74,7 +74,7 @@ class YouTubeCustomPlayer extends Component {
   render() {
     const { videoId, replayButton, youtubeOpts, overlayStyle,
     buttonWrapperStyle, controlsBarStyle, sliderBarStyle,
-    sliderBarFillStyle, sliderBarHandlerStyle } = this.props;
+    sliderBarFillStyle, sliderBarHandlerStyle, wrapperStyle } = this.props;
     const { click, player, state, currentTime, paused, time } = this.state;
     const playButton = (<ButtonOverlay style={buttonWrapperStyle}>
       {this.props.playButton || <div style={defaultStyles.playButtonAfter} />}
@@ -101,7 +101,7 @@ class YouTubeCustomPlayer extends Component {
       height: '100%',
     }, youtubeOpts);
     return (
-      <div style={defaultStyles.wrapper}>
+      <div style={mergeObjects(defaultStyles.wrapper,wrapperStyle)}>
         {!click ?
           <div onClick={this.handleClick}>
             {thumbnail}
