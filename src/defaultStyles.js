@@ -15,6 +15,7 @@ const defaultStyles = {
     color: 'white',
     paddingTop: '4px',
     boxShadow: 'rgba(0, 0, 0, 0.75) 7px 17px 60px -12px',
+    outline: 'none',
   },
   playButtonWrapper: {
     background: '#F39C12',
