@@ -1,6 +1,6 @@
 {
   "name": "react-custom-youtube-player",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "description": "Simple custom youtube player",
   "main": "./lib/",
   "scripts": {
